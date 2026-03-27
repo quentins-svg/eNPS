@@ -173,7 +173,7 @@ export default function App() {
           <div style={{ textAlign: "center", padding: "40px 24px 32px" }}>
             <AnimatedVLogo size={90} />
             <div style={{ animation: "floatIn 0.6s 0.8s both" }}>
-              <h1 style={{ fontSize: 32, fontWeight: 800, color: "#000", margin: "24px 0 6px", lineHeight: 1.05, letterSpacing: -1 }}>eNPS - Employee Fulfillment</h1>
+              <h1 style={{ fontSize: 32, fontWeight: 800, color: "#000", margin: "24px 0 6px", lineHeight: 1.05, letterSpacing: -1 }}>eNPS</h1>
               <p style={{ fontSize: 13, color: "#999", margin: "0 0 4px", fontWeight: 500 }}>Q1 2026 · Company-wide Survey</p>
               <div style={{ width: 32, height: 2, background: BLUE, margin: "16px auto 20px" }} />
               <p style={{ fontSize: 14, color: "#555", lineHeight: 1.7, margin: "0 0 6px" }}>Share how you feel about working at Voodoo.</p>
