@@ -126,12 +126,33 @@ export default function App() {
   const totalSteps = needsFeedback ? 3 : 2;
   const currentStep = phase === "welcome" ? 0 : phase === "rating" ? 1 : phase === "feedback" ? 2 : totalSteps;
 
-  const handleSubmit = () => {
+  const WEBHOOK_URL = "https://voodoohr.app.n8n.cloud/webhook/enps-response";
+
+  // Read token from URL
+  const token = new URLSearchParams(window.location.search).get("t") || "";
+
+  const handleSubmit = async () => {
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      setPhase("thanks");
-    }, 1500);
+    try {
+      const payload = {
+        token,
+        rating,
+        quarter: "Q2-2026",
+        start: feedbackRef.current.start || "",
+        keep: feedbackRef.current.keep || "",
+        drop: feedbackRef.current.drop || "",
+        submittedAt: new Date().toISOString()
+      };
+      await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.error("Submit error:", err);
+    }
+    setSubmitting(false);
+    setPhase("thanks");
   };
 
   const handleRatingNext = () => {
