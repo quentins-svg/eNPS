@@ -101,7 +101,7 @@ const FBField = ({ icon, label, fieldKey, feedbackRef }) => (
       <span style={{ fontSize: 10, color: "#CCC" }}>optional</span>
     </div>
     <textarea
-      placeholder={`What should Voodoo ${fieldKey}?`}
+      placeholder={`Your feedback here...`}
       onChange={e => { feedbackRef.current[fieldKey] = e.target.value; }}
       onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.background = BLUE_LIGHT; }}
       onBlur={e => { e.target.style.borderColor = "#E5E5E5"; e.target.style.background = "#fff"; }}
@@ -228,7 +228,7 @@ export default function App() {
             <NPSScale value={rating} onSelect={setRating} />
             {rating !== null && (
               <div style={{ marginTop: 28, animation: "fadeScale 0.3s ease" }}>
-                <Btn onClick={handleRatingNext} disabled={submitting} style={{ width: "100%", padding: "14px 32px", borderRadius: 12, fontSize: 14 }}>
+                <Btn onClick={handleRatingNext} disabled={submitting} style={{ padding: "14px 48px", borderRadius: 12, fontSize: 14 }}>
                   {rating <= 7 ? "Next — share feedback" : (submitting ? "Submitting..." : "Submit")}
                 </Btn>
                 {rating >= 8 && (
@@ -253,7 +253,7 @@ export default function App() {
             <FBField icon="→" label="Start" fieldKey="start" feedbackRef={feedbackRef} />
             <FBField icon="↻" label="Keep" fieldKey="keep" feedbackRef={feedbackRef} />
             <FBField icon="×" label="Drop" fieldKey="drop" feedbackRef={feedbackRef} />
-            <Btn onClick={handleSubmit} disabled={submitting} style={{ width: "100%", marginTop: 8, padding: "14px 32px", borderRadius: 12, fontSize: 14 }}>
+            <Btn onClick={handleSubmit} disabled={submitting} style={{ padding: "14px 48px", borderRadius: 12, fontSize: 14 }}>
               {submitting ? "Submitting..." : "Submit feedback"}
             </Btn>
             <p style={{ fontSize: 10, color: "#CCC", textAlign: "center", marginTop: 12, fontStyle: "italic" }}>Your feedback is completely anonymous.</p>
