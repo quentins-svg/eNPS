@@ -65,15 +65,15 @@ const NPSScale = ({ value, onSelect }) => {
   const [hovered, setHovered] = useState(null);
   const display = hovered ?? value;
   return (
-    <div>
-      <div style={{ display: "flex", gap: 3, marginBottom: 8 }}>
+    <div style={{ maxWidth: 420, margin: "0 auto" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(11, 1fr)", gap: 4, marginBottom: 8 }}>
         {[...Array(11)].map((_, i) => {
           const active = value === i, isHov = hovered === i, t = getNPSType(i);
           const bg = active ? BLUE : isHov ? (t === "promoter" ? "#E8F5E9" : t === "passive" ? "#FFF8E1" : "#FFEBEE") : "#fff";
           const border = active ? BLUE : isHov ? (t === "promoter" ? "#66BB6A" : t === "passive" ? "#FFB300" : "#EF5350") : "#E5E5E5";
           return (
             <button key={i} onClick={() => onSelect(i)} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
-              style={{ flex: "1 1 0", minWidth: 0, height: 44, borderRadius: 9, border: `${active ? 2 : 1}px solid ${border}`, background: bg, color: active ? "#fff" : "#000", fontSize: 14, fontWeight: 700, cursor: "pointer", transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)", transform: active ? "scale(1.1)" : isHov ? "scale(1.05) translateY(-2px)" : "scale(1)", boxShadow: active ? "0 4px 16px rgba(0,82,255,0.3)" : isHov ? "0 2px 8px rgba(0,0,0,0.08)" : "none", fontFamily: "inherit", position: "relative", padding: 0 }}>
+              style={{ width: "100%", aspectRatio: "1", borderRadius: 9, border: `${active ? 2 : 1}px solid ${border}`, background: bg, color: active ? "#fff" : "#000", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)", transform: active ? "scale(1.1)" : isHov ? "scale(1.05) translateY(-2px)" : "scale(1)", boxShadow: active ? "0 4px 16px rgba(0,82,255,0.3)" : isHov ? "0 2px 8px rgba(0,0,0,0.08)" : "none", fontFamily: "inherit", position: "relative", padding: 0 }}>
               {i}
               {active && <div style={{ position: "absolute", inset: -5, borderRadius: 13, border: "2px solid rgba(0,82,255,0.2)", animation: "pulseRing 1s ease-out" }} />}
             </button>
@@ -227,7 +227,7 @@ export default function App() {
             </div>
             <NPSScale value={rating} onSelect={setRating} />
             {rating !== null && (
-              <div style={{ marginTop: 28, animation: "fadeScale 0.3s ease" }}>
+              <div style={{ marginTop: 28, animation: "fadeScale 0.3s ease", textAlign: "center" }}>
                 <Btn onClick={handleRatingNext} disabled={submitting} style={{ padding: "14px 48px", borderRadius: 12, fontSize: 14 }}>
                   {rating <= 7 ? "Next — share feedback" : (submitting ? "Submitting..." : "Submit")}
                 </Btn>
@@ -253,9 +253,11 @@ export default function App() {
             <FBField icon="→" label="Start" fieldKey="start" feedbackRef={feedbackRef} />
             <FBField icon="↻" label="Keep" fieldKey="keep" feedbackRef={feedbackRef} />
             <FBField icon="×" label="Drop" fieldKey="drop" feedbackRef={feedbackRef} />
+            <div style={{ textAlign: "center", marginTop: 8 }}>
             <Btn onClick={handleSubmit} disabled={submitting} style={{ padding: "14px 48px", borderRadius: 12, fontSize: 14 }}>
               {submitting ? "Submitting..." : "Submit feedback"}
             </Btn>
+            </div>
             <p style={{ fontSize: 10, color: "#CCC", textAlign: "center", marginTop: 12, fontStyle: "italic" }}>Your feedback is completely anonymous.</p>
           </div>
         </Slide>
