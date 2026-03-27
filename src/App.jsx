@@ -159,7 +159,7 @@ export default function App() {
               <p style={{ fontSize: 12, color: "#CCC", margin: "0 0 24px" }}>1 question · ~1 minute · 100% anonymous</p>
             </div>
             <div style={{ animation: "floatIn 0.6s 1s both" }}>
-              <Btn onClick={() => setPhase("rating")} style={{ width: "100%", padding: "14px 32px", fontSize: 15, borderRadius: 12 }}>
+              <Btn onClick={() => setPhase("rating")} style={{ padding: "14px 48px", fontSize: 15, borderRadius: 12 }}>
                 Start survey
               </Btn>
               <p style={{ fontSize: 12, color: "#999", marginTop: 14, animation: "floatIn 0.6s 1.1s both" }}>
