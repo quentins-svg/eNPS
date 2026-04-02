@@ -135,6 +135,7 @@ export default function App() {
   const WEBHOOK_URL = "https://voodoohr.app.n8n.cloud/webhook/enps-response";
 
   const token = new URLSearchParams(window.location.search).get("t") || "";
+  const quarter = new URLSearchParams(window.location.search).get("q") || "Q1-2026";
 
   const hasFeedback = () => {
     const { start, keep, drop } = feedbackRef.current;
@@ -151,7 +152,7 @@ export default function App() {
       const payload = {
         token,
         rating,
-        quarter: "Q2-2026",
+        quarter,
         start: feedbackRef.current.start || "",
         keep: feedbackRef.current.keep || "",
         drop: feedbackRef.current.drop || "",
