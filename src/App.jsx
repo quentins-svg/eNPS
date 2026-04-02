@@ -47,6 +47,7 @@ const LoadingOverlay = () => (
         <div key={i} style={{ width: 7, height: 7, borderRadius: "50%", background: "#000", animation: `dotBounce 1.4s infinite ease-in-out both`, animationDelay: `${i * 0.16}s` }} />
       ))}
     </div>
+    <p style={{ fontSize: 11, color: "#999", marginTop: 12, fontStyle: "italic" }}>This may take up to 30 seconds</p>
   </div>
 );
 
@@ -93,22 +94,26 @@ const NPSScale = ({ value, onSelect }) => {
   );
 };
 
-const FBField = ({ icon, label, fieldKey, feedbackRef }) => (
-  <div style={{ marginBottom: 14 }}>
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-      <span style={{ width: 24, height: 24, borderRadius: 7, background: BLUE, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>{icon}</span>
-      <span style={{ fontSize: 13, fontWeight: 700, color: "#000" }}>{label}</span>
-      <span style={{ fontSize: 10, color: "#CCC" }}>optional</span>
+const FBField = ({ icon, label, fieldKey, feedbackRef, required }) => {
+  const [val, setVal] = useState("");
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+        <span style={{ width: 24, height: 24, borderRadius: 7, background: BLUE, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>{icon}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#000" }}>{label}</span>
+        <span style={{ fontSize: 10, color: required ? "#EF5350" : "#CCC" }}>{required ? "at least 1 required" : "optional"}</span>
+      </div>
+      <textarea
+        placeholder={`Your feedback here...`}
+        value={val}
+        onChange={e => { setVal(e.target.value); feedbackRef.current[fieldKey] = e.target.value; }}
+        onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.background = BLUE_LIGHT; }}
+        onBlur={e => { e.target.style.borderColor = "#E5E5E5"; e.target.style.background = "#fff"; }}
+        style={{ width: "100%", minHeight: 56, borderRadius: 10, border: "1px solid #E5E5E5", padding: "10px 14px", fontSize: 13, fontFamily: "inherit", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "all 0.2s", color: "#000", background: "#fff" }}
+      />
     </div>
-    <textarea
-      placeholder={`Your feedback here...`}
-      onChange={e => { feedbackRef.current[fieldKey] = e.target.value; }}
-      onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.background = BLUE_LIGHT; }}
-      onBlur={e => { e.target.style.borderColor = "#E5E5E5"; e.target.style.background = "#fff"; }}
-      style={{ width: "100%", minHeight: 56, borderRadius: 10, border: "1px solid #E5E5E5", padding: "10px 14px", fontSize: 13, fontFamily: "inherit", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "all 0.2s", color: "#000", background: "#fff" }}
-    />
-  </div>
-);
+  );
+};
 
 const ProgressBar = ({ step, total }) => (
   <div style={{ height: 3, background: "#F0F0F0", borderRadius: 2, marginBottom: 0 }}>
@@ -120,18 +125,27 @@ export default function App() {
   const [phase, setPhase] = useState("welcome");
   const [rating, setRating] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [fbError, setFbError] = useState(false);
   const feedbackRef = useRef({ start: "", keep: "", drop: "" });
 
-  const needsFeedback = rating !== null && rating <= 7;
+  const needsFeedback = rating !== null && rating <= 8;
   const totalSteps = needsFeedback ? 3 : 2;
   const currentStep = phase === "welcome" ? 0 : phase === "rating" ? 1 : phase === "feedback" ? 2 : totalSteps;
 
   const WEBHOOK_URL = "https://voodoohr.app.n8n.cloud/webhook/enps-response";
 
-  // Read token from URL
   const token = new URLSearchParams(window.location.search).get("t") || "";
 
+  const hasFeedback = () => {
+    const { start, keep, drop } = feedbackRef.current;
+    return (start && start.trim()) || (keep && keep.trim()) || (drop && drop.trim());
+  };
+
   const handleSubmit = async () => {
+    if (rating !== null && rating <= 8 && !hasFeedback()) {
+      setFbError(true);
+      return;
+    }
     setSubmitting(true);
     try {
       const payload = {
@@ -157,7 +171,7 @@ export default function App() {
 
   const handleRatingNext = () => {
     if (rating === null) return;
-    if (rating <= 7) {
+    if (rating <= 8) {
       setPhase("feedback");
     } else {
       handleSubmit();
@@ -200,11 +214,7 @@ export default function App() {
               </svg>
             </div>
             <h1 style={{ fontSize: 28, fontWeight: 800, color: "#000", margin: "0 0 8px", letterSpacing: -0.5 }}>Thank you!</h1>
-            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "0 0 28px" }}>Your anonymous feedback has been recorded.</p>
-            <div style={{ background: BLUE_LIGHT, borderRadius: 12, padding: "16px 20px", border: `1px solid ${BLUE}22` }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#000", margin: "0 0 4px" }}>What happens next?</p>
-              <p style={{ fontSize: 12, color: "#666", lineHeight: 1.6, margin: 0 }}>Results will be compiled and shared with the company. Your individual response cannot be traced back to you.</p>
-            </div>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: 0 }}>Your anonymous feedback has been recorded.</p>
           </div>
         </Slide>
       )}
@@ -229,9 +239,9 @@ export default function App() {
             {rating !== null && (
               <div style={{ marginTop: 28, animation: "fadeScale 0.3s ease", textAlign: "center" }}>
                 <Btn onClick={handleRatingNext} disabled={submitting} style={{ padding: "14px 48px", borderRadius: 12, fontSize: 14 }}>
-                  {rating <= 7 ? "Next — share feedback" : (submitting ? "Submitting..." : "Submit")}
+                  {rating <= 8 ? "Next — share feedback" : (submitting ? "Submitting..." : "Submit")}
                 </Btn>
-                {rating >= 8 && (
+                {rating >= 9 && (
                   <p style={{ fontSize: 11, color: "#BBB", textAlign: "center", marginTop: 10 }}>Great to hear! Your positive score will be recorded anonymously.</p>
                 )}
               </div>
@@ -248,13 +258,18 @@ export default function App() {
             <div style={{ textAlign: "center", margin: "28px 0 24px" }}>
               <h2 style={{ fontSize: 20, fontWeight: 800, color: "#000", margin: "0 0 6px", lineHeight: 1.3 }}>Help us improve</h2>
               <p style={{ fontSize: 13, color: "#999", margin: "0 0 6px" }}>You rated <strong style={{ color: BLUE }}>{rating}/10</strong>. What could make your experience better?</p>
-              <p style={{ fontSize: 11, color: "#CCC" }}>All fields are optional.</p>
+              <p style={{ fontSize: 11, color: "#CCC" }}>Please fill in at least one field below.</p>
             </div>
-            <FBField icon="→" label="Start" fieldKey="start" feedbackRef={feedbackRef} />
-            <FBField icon="↻" label="Keep" fieldKey="keep" feedbackRef={feedbackRef} />
-            <FBField icon="×" label="Drop" fieldKey="drop" feedbackRef={feedbackRef} />
+            {fbError && (
+              <div style={{ background: "#FFEBEE", border: "1px solid #EF5350", borderRadius: 8, padding: "8px 14px", marginBottom: 14, animation: "fadeScale 0.3s ease" }}>
+                <p style={{ fontSize: 12, color: "#C62828", margin: 0, fontWeight: 600 }}>Please fill in at least one feedback field (Start, Keep, or Drop) before submitting.</p>
+              </div>
+            )}
+            <FBField icon="→" label="Start" fieldKey="start" feedbackRef={feedbackRef} required />
+            <FBField icon="↻" label="Keep" fieldKey="keep" feedbackRef={feedbackRef} required />
+            <FBField icon="×" label="Drop" fieldKey="drop" feedbackRef={feedbackRef} required />
             <div style={{ textAlign: "center", marginTop: 8 }}>
-            <Btn onClick={handleSubmit} disabled={submitting} style={{ padding: "14px 48px", borderRadius: 12, fontSize: 14 }}>
+            <Btn onClick={() => { setFbError(false); handleSubmit(); }} disabled={submitting} style={{ padding: "14px 48px", borderRadius: 12, fontSize: 14 }}>
               {submitting ? "Submitting..." : "Submit feedback"}
             </Btn>
             </div>
